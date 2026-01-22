@@ -55,8 +55,65 @@ export class KieTaskStatus implements INodeType {
 					{ taskId },
 				);
 
+				// Parse and clean the response
+				let cleanedData = responseData;
+
+				if (responseData.data) {
+					const data = responseData.data;
+					const cleaned: any = {
+						taskId: data.taskId,
+						model: data.model,
+						state: data.state,
+						createTime: data.createTime,
+						completeTime: data.completeTime,
+						costTime: data.costTime,
+					};
+
+					// Parse param JSON string
+					if (data.param && typeof data.param === 'string') {
+						try {
+							const parsedParam = JSON.parse(data.param);
+							cleaned.parameters = parsedParam;
+
+							// Further parse nested input if it exists
+							if (parsedParam.input && typeof parsedParam.input === 'string') {
+								try {
+									cleaned.input = JSON.parse(parsedParam.input);
+								} catch (e) {
+									cleaned.input = parsedParam.input;
+								}
+							}
+						} catch (e) {
+							cleaned.parameters = data.param;
+						}
+					}
+
+					// Parse resultJson string
+					if (data.resultJson && typeof data.resultJson === 'string' && data.resultJson !== '') {
+						try {
+							cleaned.result = JSON.parse(data.resultJson);
+						} catch (e) {
+							cleaned.result = data.resultJson;
+						}
+					}
+
+					// Include error information if present
+					if (data.failCode !== null || data.failMsg !== null) {
+						cleaned.error = {
+							code: data.failCode,
+							message: data.failMsg,
+						};
+					}
+
+					cleanedData = {
+						code: responseData.code,
+						message: responseData.msg,
+						data: cleaned,
+					};
+				}
+
 				const executionData = this.helpers.constructExecutionMetaData(
-					this.helpers.returnJsonArray(responseData),
+					this.helpers.returnJsonArray(cleanedData),
 					{ itemData: { item: i } },
 				);
 
