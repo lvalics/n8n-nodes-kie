@@ -101,7 +101,7 @@ export const fileUploadFields: INodeProperties[] = [
 		},
 		default: '',
 		placeholder: 'my-file.jpg',
-		description: 'Custom filename. If omitted, a random name is generated. Same filename overwrites previous file.',
+		description: 'Custom filename with extension (e.g., my-file.jpg). If omitted, a random filename is auto-generated with proper extension. Same filename overwrites previous file.',
 	},
 	{
 		displayName: 'Upload Path',
@@ -112,7 +112,7 @@ export const fileUploadFields: INodeProperties[] = [
 				resource: ['fileUpload'],
 			},
 		},
-		default: '',
+		default: 'images',
 		placeholder: 'images',
 		description: 'Optional directory path for organizing files',
 	},
