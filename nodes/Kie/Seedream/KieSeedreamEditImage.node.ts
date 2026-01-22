@@ -61,14 +61,6 @@ export class KieSeedreamEditImage implements INodeType {
 						value: '1:1',
 					},
 					{
-						name: '16:9 (Landscape)',
-						value: '16:9',
-					},
-					{
-						name: '9:16 (Portrait)',
-						value: '9:16',
-					},
-					{
 						name: '4:3',
 						value: '4:3',
 					},
@@ -77,12 +69,24 @@ export class KieSeedreamEditImage implements INodeType {
 						value: '3:4',
 					},
 					{
-						name: '21:9 (Ultrawide)',
-						value: '21:9',
+						name: '16:9 (Landscape)',
+						value: '16:9',
 					},
 					{
-						name: '9:21',
-						value: '9:21',
+						name: '9:16 (Portrait)',
+						value: '9:16',
+					},
+					{
+						name: '2:3',
+						value: '2:3',
+					},
+					{
+						name: '3:2',
+						value: '3:2',
+					},
+					{
+						name: '21:9 (Ultrawide)',
+						value: '21:9',
 					},
 				],
 				default: '1:1',
@@ -94,15 +98,15 @@ export class KieSeedreamEditImage implements INodeType {
 				type: 'options',
 				options: [
 					{
-						name: 'Standard',
-						value: 'standard',
+						name: 'Basic',
+						value: 'basic',
 					},
 					{
-						name: 'HD',
-						value: 'hd',
+						name: 'High',
+						value: 'high',
 					},
 				],
-				default: 'standard',
+				default: 'basic',
 				description: 'Quality level of the edited image',
 			},
 			{
