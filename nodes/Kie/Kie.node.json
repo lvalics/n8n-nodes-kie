@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-kie.kie",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["AI", "File Management", "Productivity"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://docs.kie.ai/common-api/quickstart"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://docs.kie.ai"
+			}
+		]
+	}
+}
