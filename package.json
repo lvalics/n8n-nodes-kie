@@ -47,7 +47,10 @@
       "dist/credentials/KieApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/Kie/Kie.node.js"
+      "dist/nodes/Kie/FileUpload/KieFileUpload.node.js",
+      "dist/nodes/Kie/Seedream/KieSeedreamTextToImage.node.js",
+      "dist/nodes/Kie/Seedream/KieSeedreamEditImage.node.js",
+      "dist/nodes/Kie/TaskStatus/KieTaskStatus.node.js"
     ]
   },
   "devDependencies": {
