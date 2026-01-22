@@ -11,7 +11,7 @@ export class KieSeedreamEditImage implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Kie Seedream Edit Image',
 		name: 'kieSeedreamEditImage',
-		icon: 'file:../kie.png',
+		icon: 'file:../kie.svg',
 		group: ['transform'],
 		version: 1,
 		description: 'Edit existing images using text prompts with Kie.ai Seedream',

@@ -11,7 +11,7 @@ export class KieSeedreamTextToImage implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Kie Seedream Text to Image',
 		name: 'kieSeedreamTextToImage',
-		icon: 'file:../kie.png',
+		icon: 'file:../kie.svg',
 		group: ['transform'],
 		version: 1,
 		description: 'Generate images from text prompts using Kie.ai Seedream',

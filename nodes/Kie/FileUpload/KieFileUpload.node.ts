@@ -11,7 +11,7 @@ export class KieFileUpload implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Kie File Upload',
 		name: 'kieFileUpload',
-		icon: 'file:../kie.png',
+		icon: 'file:../kie.svg',
 		group: ['transform'],
 		version: 1,
 		description: 'Upload files to Kie.ai storage',

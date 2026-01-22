@@ -11,7 +11,7 @@ export class KieTaskStatus implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Kie Task Status',
 		name: 'kieTaskStatus',
-		icon: 'file:../kie.png',
+		icon: 'file:../kie.svg',
 		group: ['transform'],
 		version: 1,
 		description: 'Get the status and results of a Kie.ai task',
@@ -50,8 +50,9 @@ export class KieTaskStatus implements INodeType {
 				const responseData = await kieApiRequest.call(
 					this,
 					'GET',
-					`/api/v1/jobs/${taskId}`,
+					'/api/v1/jobs/recordInfo',
 					{},
+					{ taskId },
 				);
 
 				const executionData = this.helpers.constructExecutionMetaData(
