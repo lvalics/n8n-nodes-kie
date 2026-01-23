@@ -7,8 +7,12 @@ This n8n community node enables seamless integration of **[Kie.ai](https://kie.a
 - **Multiple AI Image Generation Models**: Seedream, Flux-2 Pro, Qwen, Z-Image, Google Nano Banana Pro
 - **Image Upscaling**: Topaz and Recraft Crisp AI enhancement
 - **Video Upscaling**: Topaz AI video enhancement
-- **Video Generation**: Wan 2.6 text/image/video-to-video models
+- **Video Generation**: Veo3, Wan 2.6, Hailuo, Seedance, Grok Imagine text/image/video-to-video models
+- **Video Enhancement**: Veo3 1080P/4K upgrades and video extension
+- **Storyboard Creation**: Sora 2 Pro multi-shot dynamic scene transitions
 - **Audio-to-Video**: Infinitalk talking head video generation
+- **Character Management**: Sora 2 reusable character animation system
+- **Watermark Removal**: Sora 2 professional watermark removal
 - **File Management**: Upload files to Kie.ai storage
 - **Task Status Tracking**: Monitor and retrieve generation results
 
@@ -92,6 +96,40 @@ AI-powered video upscaling using Topaz.
 
 ### Video Generation
 
+#### Kie Sora 2 Pro
+Professional video generation with character integration.
+- **Text-to-Video**: Generate videos from text descriptions (max 10,000 characters)
+- **Image-to-Video**: Create videos from images with optional text guidance
+- **Character Integration**: Use up to 5 character IDs from Sora 2 Characters node
+- **Aspect Ratios**: Landscape, Portrait
+- **Duration**: 10 or 15 seconds
+- **Quality**: Standard or High
+- **Watermark Removal**: Optional watermark elimination
+- **Use Cases**: Professional content, character-driven stories, multi-scene productions
+
+#### Kie Sora 2 Pro Storyboard
+Multi-shot storyboard video creation with dynamic scene transitions.
+- **Dynamic Shots**: Add 1-10 customizable shots with individual scene descriptions
+- **Precise Timing**: Each shot has configurable duration (0.1-15 seconds)
+- **Duration Validation**: Automatic validation ensures total shot durations match video length
+- **Video Durations**: 10, 15, or 25 seconds total
+- **Single Image Source**: One image used across all shots with scene-based transformations
+- **Aspect Ratios**: Landscape, Portrait
+- **Flexible Storytelling**: Create complex narratives with multiple scene transitions
+- **Use Cases**: Storyboard previews, multi-scene content, narrative videos, presentation sequences
+
+#### Kie Veo3
+Google's Veo 3.1 professional video generation and enhancement.
+- **Generate Video**: Text-to-video or image-to-video (1-2 images)
+- **Extend Video**: Continue existing videos with new content
+- **1080P Upgrade**: Enhance 16:9 videos to 1080P (returns URL directly, 1-3 min processing)
+- **4K Upgrade**: Enhance 16:9/9:16 videos to 4K (returns taskId, 5-10 min processing, 2× credits)
+- **Models**: Veo3 (quality) or Veo3 Fast (speed/cost-efficient)
+- **Aspect Ratios**: 16:9, 9:16, 1:1 (upgrades only for 16:9 and 9:16)
+- **Customization**: Seed control, watermarks, translation support
+- **Important**: Extend videos before upgrading to 1080P/4K
+- **Use Cases**: Professional video production, content extension, resolution enhancement
+
 #### Kie Grok Imagine
 AI-powered video generation with style modes.
 - **Text-to-Video**: Generate videos from detailed text descriptions
@@ -139,6 +177,25 @@ Generate talking head videos from audio.
 - **Resolution Options**: 480p, 720p, 1080p
 - **Prompt Control**: Describe desired animation style
 - **Use Cases**: Avatars, presentations, content creation
+
+### Character & Asset Management
+
+#### Kie Sora 2 Characters
+Create reusable character animations from video.
+- **Character ID Generation**: Upload video to create reusable character reference
+- **Video Requirements**: 1-4 seconds, max 10MB, MP4/WebM/AVI formats
+- **Reusable Characters**: character_id can be used in multiple animation jobs
+- **Optional Customization**: Character prompt and safety instructions
+- **Storage Notice**: Files stored for 14 days (use permanent storage for production)
+- **Use Cases**: Consistent character animations, character libraries, multi-scene content
+
+#### Kie Sora Watermark Remover
+Remove watermarks from Sora 2 generated videos.
+- **OpenAI Sora 2 Only**: Works exclusively with videos from sora.chatgpt.com
+- **URL Validation**: Automatically validates Sora 2 video URLs
+- **Clean Results**: Professional watermark-free videos
+- **Storage Notice**: Processed videos stored for 14 days
+- **Use Cases**: Professional content, commercial use, brand consistency
 
 ### Utilities
 
@@ -218,6 +275,8 @@ For detailed API documentation, visit [docs.kie.ai](https://docs.kie.ai)
 - **bytedance/seedance-1.5-pro**
 - **hailuo/02-text-to-video-pro** & **hailuo/02-image-to-video-pro**
 - **wan/2-6-text-to-video**, **wan/2-6-image-to-video** & **wan/2-6-video-to-video**
+- **sora-2-characters**
+- **sora-2-pro-text-to-video** & **sora-2-pro-image-to-video**
 - **infinitalk/from-audio**
 
 ## Callback URLs
