@@ -6,17 +6,18 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow';
 import { kieApiRequest } from '../shared/GenericFunctions';
+import { ASPECT_RATIO_OPTIONS, QUALITY_OPTIONS } from '../shared/Constants';
 
-export class KieSeedreamTextToImage implements INodeType {
+export class KieSeedream implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Kie Seedream Text to Image',
-		name: 'kieSeedreamTextToImage',
+		displayName: 'Kie Seedream',
+		name: 'kieSeedream',
 		icon: 'file:../kie.svg',
 		group: ['transform'],
 		version: 1,
-		description: 'Generate images from text prompts using Kie.ai Seedream',
+		description: 'Generate or edit images using text prompts with Kie.ai Seedream',
 		defaults: {
-			name: 'Seedream Text to Image',
+			name: 'Kie Seedream',
 		},
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],
@@ -37,65 +38,35 @@ export class KieSeedreamTextToImage implements INodeType {
 					rows: 4,
 				},
 				placeholder: 'A beautiful sunset over mountains',
-				description: 'Text description of the image to generate',
+				description: 'Text description to generate or edit an image',
+			},
+			{
+				displayName: 'Image URLs',
+				name: 'imageUrls',
+				type: 'string',
+				required: false,
+				default: '',
+				typeOptions: {
+					rows: 2,
+				},
+				placeholder: 'https://example.com/image1.jpg, https://example.com/image2.jpg',
+				description: 'Optional comma-separated list of image URLs to edit. If empty, generates a new image from the prompt.',
 			},
 			{
 				displayName: 'Aspect Ratio',
 				name: 'aspectRatio',
 				type: 'options',
-				options: [
-					{
-						name: '1:1 (Square)',
-						value: '1:1',
-					},
-					{
-						name: '4:3',
-						value: '4:3',
-					},
-					{
-						name: '3:4',
-						value: '3:4',
-					},
-					{
-						name: '16:9 (Landscape)',
-						value: '16:9',
-					},
-					{
-						name: '9:16 (Portrait)',
-						value: '9:16',
-					},
-					{
-						name: '2:3',
-						value: '2:3',
-					},
-					{
-						name: '3:2',
-						value: '3:2',
-					},
-					{
-						name: '21:9 (Ultrawide)',
-						value: '21:9',
-					},
-				],
+				options: ASPECT_RATIO_OPTIONS,
 				default: '1:1',
-				description: 'Aspect ratio for the generated image',
+				description: 'Aspect ratio for the generated or edited image',
 			},
 			{
 				displayName: 'Quality',
 				name: 'quality',
 				type: 'options',
-				options: [
-					{
-						name: 'Basic',
-						value: 'basic',
-					},
-					{
-						name: 'High',
-						value: 'high',
-					},
-				],
+				options: QUALITY_OPTIONS,
 				default: 'basic',
-				description: 'Quality level of the generated image',
+				description: 'Quality level of the generated or edited image',
 			},
 			{
 				displayName: 'Callback URL',
@@ -115,18 +86,32 @@ export class KieSeedreamTextToImage implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			try {
 				const prompt = this.getNodeParameter('prompt', i) as string;
+				const imageUrlsString = this.getNodeParameter('imageUrls', i, '') as string;
 				const aspectRatio = this.getNodeParameter('aspectRatio', i) as string;
 				const quality = this.getNodeParameter('quality', i) as string;
 				const callBackUrl = this.getNodeParameter('callBackUrl', i, '') as string;
 
+				// Parse image URLs if provided
+				const imageUrls = imageUrlsString
+					? imageUrlsString.split(',').map(url => url.trim()).filter(url => url)
+					: [];
+
+				// Choose model based on whether images are provided
+				const model = imageUrls.length > 0 ? 'seedream/4.5-edit' : 'seedream/4.5-text-to-image';
+
 				const body: any = {
-					model: 'seedream/4.5-text-to-image',
+					model,
 					input: {
 						prompt,
 						aspect_ratio: aspectRatio,
 						quality,
 					},
 				};
+
+				// Only include image_urls if they exist
+				if (imageUrls.length > 0) {
+					body.input.image_urls = imageUrls;
+				}
 
 				if (callBackUrl) {
 					body.callBackUrl = callBackUrl;

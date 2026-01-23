@@ -48,8 +48,10 @@
     ],
     "nodes": [
       "dist/nodes/Kie/FileUpload/KieFileUpload.node.js",
-      "dist/nodes/Kie/Seedream/KieSeedreamTextToImage.node.js",
-      "dist/nodes/Kie/Seedream/KieSeedreamEditImage.node.js",
+      "dist/nodes/Kie/GoogleNanoBananaPro/KieGoogleNanoBananaPro.node.js",
+      "dist/nodes/Kie/Qwen/KieQwen.node.js",
+      "dist/nodes/Kie/Seedream/KieSeedream.node.js",
+      "dist/nodes/Kie/ZImage/KieZImage.node.js",
       "dist/nodes/Kie/TaskStatus/KieTaskStatus.node.js"
     ]
   },

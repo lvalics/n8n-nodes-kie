@@ -4,19 +4,44 @@ import {
 	INodeType,
 	INodeTypeDescription,
 	NodeConnectionType,
+	INodePropertyOptions,
 } from 'n8n-workflow';
 import { kieApiRequest } from '../shared/GenericFunctions';
 
-export class KieSeedreamEditImage implements INodeType {
+// Z-Image specific aspect ratio options
+const ZIMAGE_ASPECT_RATIO_OPTIONS: INodePropertyOptions[] = [
+	{
+		name: '1:1 (Square)',
+		value: '1:1',
+	},
+	{
+		name: '4:3',
+		value: '4:3',
+	},
+	{
+		name: '3:4',
+		value: '3:4',
+	},
+	{
+		name: '16:9 (Landscape)',
+		value: '16:9',
+	},
+	{
+		name: '9:16 (Portrait)',
+		value: '9:16',
+	},
+];
+
+export class KieZImage implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Kie Seedream Edit Image',
-		name: 'kieSeedreamEditImage',
+		displayName: 'Kie Z-Image',
+		name: 'kieZImage',
 		icon: 'file:../kie.svg',
 		group: ['transform'],
 		version: 1,
-		description: 'Edit existing images using text prompts with Kie.ai Seedream',
+		description: 'Generate images using text prompts with Kie.ai Z-Image',
 		defaults: {
-			name: 'Seedream Edit Image',
+			name: 'Kie Z-Image',
 		},
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],
@@ -36,78 +61,16 @@ export class KieSeedreamEditImage implements INodeType {
 				typeOptions: {
 					rows: 4,
 				},
-				placeholder: 'Add a rainbow in the sky',
-				description: 'Text description of how to edit the image',
-			},
-			{
-				displayName: 'Image URLs',
-				name: 'imageUrls',
-				type: 'string',
-				required: true,
-				default: '',
-				typeOptions: {
-					rows: 2,
-				},
-				placeholder: 'https://example.com/image1.jpg, https://example.com/image2.jpg',
-				description: 'Comma-separated list of image URLs to edit',
+				placeholder: 'A beautiful sunset over mountains',
+				description: 'Text description to generate an image',
 			},
 			{
 				displayName: 'Aspect Ratio',
 				name: 'aspectRatio',
 				type: 'options',
-				options: [
-					{
-						name: '1:1 (Square)',
-						value: '1:1',
-					},
-					{
-						name: '4:3',
-						value: '4:3',
-					},
-					{
-						name: '3:4',
-						value: '3:4',
-					},
-					{
-						name: '16:9 (Landscape)',
-						value: '16:9',
-					},
-					{
-						name: '9:16 (Portrait)',
-						value: '9:16',
-					},
-					{
-						name: '2:3',
-						value: '2:3',
-					},
-					{
-						name: '3:2',
-						value: '3:2',
-					},
-					{
-						name: '21:9 (Ultrawide)',
-						value: '21:9',
-					},
-				],
+				options: ZIMAGE_ASPECT_RATIO_OPTIONS,
 				default: '1:1',
-				description: 'Aspect ratio for the edited image',
-			},
-			{
-				displayName: 'Quality',
-				name: 'quality',
-				type: 'options',
-				options: [
-					{
-						name: 'Basic',
-						value: 'basic',
-					},
-					{
-						name: 'High',
-						value: 'high',
-					},
-				],
-				default: 'basic',
-				description: 'Quality level of the edited image',
+				description: 'Aspect ratio for the generated or edited image',
 			},
 			{
 				displayName: 'Callback URL',
@@ -127,20 +90,14 @@ export class KieSeedreamEditImage implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			try {
 				const prompt = this.getNodeParameter('prompt', i) as string;
-				const imageUrlsString = this.getNodeParameter('imageUrls', i) as string;
 				const aspectRatio = this.getNodeParameter('aspectRatio', i) as string;
-				const quality = this.getNodeParameter('quality', i) as string;
 				const callBackUrl = this.getNodeParameter('callBackUrl', i, '') as string;
 
-				const imageUrls = imageUrlsString.split(',').map(url => url.trim()).filter(url => url);
-
 				const body: any = {
-					model: 'seedream/4.5-edit',
+					model: 'z-image',
 					input: {
 						prompt,
-						image_urls: imageUrls,
 						aspect_ratio: aspectRatio,
-						quality,
 					},
 				};
 
