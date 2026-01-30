@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-kie",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "n8n nodes for Kie.ai - AI image generation, video creation, image upscaling with Seedream, Flux-2 Pro, Qwen, Google Nano Banana Pro, Topaz, Recraft, and Infinitalk models",
   "keywords": [
     "n8n-community-node-package",
@@ -53,7 +53,7 @@
     "stable-diffusion"
   ],
   "license": "MIT",
-  "homepage": "https://kie.ai",
+  "homepage": "https://kie.ai?ref=8bb1f85af9529decd05a9a7801792755",
   "author": {
     "name": "Valics Lehel",
     "email": "lvalics@gmail.com"
@@ -75,7 +75,6 @@
     "format": "prettier nodes credentials --write",
     "lint": "echo 'Linting disabled temporarily'",
     "lintfix": "echo 'Linting disabled temporarily'",
-    "prepublishOnly": "npm run build",
     "runn8n": "npx nodemon -q -e js,ts,yml,yaml,json,node,graphql,env,env.sample --exec n8n start"
   },
   "files": [

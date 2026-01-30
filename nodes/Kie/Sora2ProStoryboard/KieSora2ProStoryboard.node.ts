@@ -8,21 +8,6 @@ import {
 } from 'n8n-workflow';
 import { kieApiRequest } from '../shared/GenericFunctions';
 
-const DURATION_OPTIONS: INodePropertyOptions[] = [
-	{
-		name: '10 Seconds',
-		value: '10',
-	},
-	{
-		name: '15 Seconds',
-		value: '15',
-	},
-	{
-		name: '25 Seconds',
-		value: '25',
-	},
-];
-
 const ASPECT_RATIO_OPTIONS: INodePropertyOptions[] = [
 	{
 		name: 'Landscape',
@@ -55,29 +40,62 @@ export class KieSora2ProStoryboard implements INodeType {
 		],
 		properties: [
 			{
+				displayName: 'Input Mode',
+				name: 'inputMode',
+				type: 'options',
+				options: [
+					{
+						name: 'Form',
+						value: 'form',
+						description: 'Use structured form fields',
+					},
+					{
+						name: 'JSON',
+						value: 'json',
+						description: 'Use raw JSON input for advanced control',
+					},
+				],
+				default: 'form',
+				description: 'Choose between form-based input or raw JSON input',
+			},
+			{
 				displayName: 'Storyboard Instructions',
 				name: 'storyboardNotice',
 				type: 'notice',
 				default: '',
+				displayOptions: {
+					show: {
+						inputMode: ['form'],
+					},
+				},
 				description:
 					'⚠️ CRITICAL: Shot durations must sum to EXACTLY match video duration. Add 1-10 shots (0.1-15s each)',
 			},
 			{
-				displayName: 'Video Duration',
+				displayName: 'Video Duration (Seconds)',
 				name: 'nFrames',
-				type: 'options',
-				options: DURATION_OPTIONS,
+				type: 'string',
 				default: '15',
-				description: 'Total video duration in seconds - all shot durations must sum to this value',
+				displayOptions: {
+					show: {
+						inputMode: ['form'],
+					},
+				},
+				placeholder: '10, 15, or 25',
+				description: 'Total video duration in seconds (10, 15, or 25) - all shot durations must sum to this value',
 			},
 			{
 				displayName: 'Image URL',
 				name: 'imageUrl',
 				type: 'string',
-				required: true,
 				default: '',
+				displayOptions: {
+					show: {
+						inputMode: ['form'],
+					},
+				},
 				placeholder: 'https://example.com/image.jpg',
-				description: 'Single source image URL for storyboard generation (JPEG, PNG, WebP, max 10MB)',
+				description: 'Optional source image URL for storyboard generation (JPEG, PNG, WebP, max 10MB)',
 			},
 			{
 				displayName: 'Aspect Ratio',
@@ -85,12 +103,22 @@ export class KieSora2ProStoryboard implements INodeType {
 				type: 'options',
 				options: ASPECT_RATIO_OPTIONS,
 				default: 'landscape',
+				displayOptions: {
+					show: {
+						inputMode: ['form'],
+					},
+				},
 				description: 'Video aspect ratio orientation',
 			},
 			{
 				displayName: 'Shots',
 				name: 'shots',
 				type: 'fixedCollection',
+				displayOptions: {
+					show: {
+						inputMode: ['form'],
+					},
+				},
 				typeOptions: {
 					multipleValues: true,
 					minValue: 1,
@@ -139,8 +167,25 @@ export class KieSora2ProStoryboard implements INodeType {
 				name: 'durationValidationNotice',
 				type: 'notice',
 				default: '',
+				displayOptions: {
+					show: {
+						inputMode: ['form'],
+					},
+				},
 				description:
 					'Sum all shot durations. Total MUST match video duration above. Example: 15s video needs shots totaling exactly 15s (e.g., 5+5+5 or 7.5+7.5)',
+			},
+			{
+				displayName: 'JSON Input',
+				name: 'jsonInput',
+				type: 'json',
+				default: '{\n  "shots": [\n    {\n      "Scene": "A cute fluffy kitten wearing headphones, sitting at a cozy table with cake",\n      "duration": 7.5\n    },\n    {\n      "Scene": "The same kitten, cake finished, licking lips with satisfied smile",\n      "duration": 7.5\n    }\n  ],\n  "n_frames": "15",\n  "image_urls": ["https://example.com/image.jpg"],\n  "aspect_ratio": "landscape"\n}',
+				displayOptions: {
+					show: {
+						inputMode: ['json'],
+					},
+				},
+				description: 'Raw JSON input for storyboard configuration. Must include: shots (array), n_frames (string), aspect_ratio (string), optional image_urls (array)',
 			},
 			{
 				displayName: 'Callback URL',
@@ -159,65 +204,116 @@ export class KieSora2ProStoryboard implements INodeType {
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				const nFrames = this.getNodeParameter('nFrames', i) as string;
-				const imageUrl = this.getNodeParameter('imageUrl', i) as string;
-				const aspectRatio = this.getNodeParameter('aspectRatio', i) as string;
-				const shotsData = this.getNodeParameter('shots', i) as any;
+				const inputMode = this.getNodeParameter('inputMode', i) as string;
 				const callBackUrl = this.getNodeParameter('callBackUrl', i, '') as string;
 
-				// Extract shots from the fixedCollection
-				const shots = shotsData.shotValues || [];
+				let body: any;
 
-				if (shots.length === 0) {
-					throw new Error('At least one shot is required');
-				}
+				if (inputMode === 'json') {
+					// JSON mode - use raw JSON input
+					const jsonInput = this.getNodeParameter('jsonInput', i) as object;
 
-				if (shots.length > 10) {
-					throw new Error('Maximum 10 shots allowed');
-				}
-
-				// Validate and format shots
-				const formattedShots: Array<{ Scene: string; duration: number }> = [];
-				let totalDuration = 0;
-
-				for (const shot of shots) {
-					const scene = shot.scene as string;
-					const duration = shot.duration as number;
-
-					if (!scene || scene.trim().length === 0) {
-						throw new Error('All shots must have a scene description');
+					// Validate required fields in JSON
+					if (!jsonInput || typeof jsonInput !== 'object') {
+						throw new Error('Invalid JSON input');
 					}
 
-					if (duration < 0.1 || duration > 15) {
-						throw new Error('Shot duration must be between 0.1 and 15 seconds');
+					const inputData = jsonInput as any;
+
+					if (!inputData.shots || !Array.isArray(inputData.shots)) {
+						throw new Error('JSON must include "shots" array');
 					}
 
-					formattedShots.push({
-						Scene: scene.trim(),
-						duration,
-					});
+					if (!inputData.n_frames) {
+						throw new Error('JSON must include "n_frames"');
+					}
 
-					totalDuration += duration;
+					if (!inputData.aspect_ratio) {
+						throw new Error('JSON must include "aspect_ratio"');
+					}
+
+					// Basic validation
+					if (inputData.shots.length === 0) {
+						throw new Error('At least one shot is required');
+					}
+
+					if (inputData.shots.length > 10) {
+						throw new Error('Maximum 10 shots allowed');
+					}
+
+					body = {
+						model: 'sora-2-pro-storyboard',
+						input: inputData,
+					};
+				} else {
+					// Form mode - use structured fields
+					const nFrames = this.getNodeParameter('nFrames', i) as string;
+					const imageUrl = this.getNodeParameter('imageUrl', i) as string;
+					const aspectRatio = this.getNodeParameter('aspectRatio', i) as string;
+					const shotsData = this.getNodeParameter('shots', i) as any;
+
+					// Extract shots from the fixedCollection
+					const shots = shotsData.shotValues || [];
+
+					if (shots.length === 0) {
+						throw new Error('At least one shot is required');
+					}
+
+					if (shots.length > 10) {
+						throw new Error('Maximum 10 shots allowed');
+					}
+
+					// Validate and format shots
+					const formattedShots: Array<{ Scene: string; duration: number }> = [];
+					let totalDuration = 0;
+
+					for (const shot of shots) {
+						const scene = shot.scene as string;
+						const duration = shot.duration as number;
+
+						if (!scene || scene.trim().length === 0) {
+							throw new Error('All shots must have a scene description');
+						}
+
+						if (duration < 0.1 || duration > 15) {
+							throw new Error('Shot duration must be between 0.1 and 15 seconds');
+						}
+
+						formattedShots.push({
+							Scene: scene.trim(),
+							duration,
+						});
+
+						totalDuration += duration;
+					}
+
+					// Validate total duration matches selected video duration
+					const targetDuration = parseFloat(nFrames);
+					if (isNaN(targetDuration)) {
+						throw new Error('Video duration must be a valid number');
+					}
+
+					// Allow small floating point tolerance (0.1s)
+					if (Math.abs(totalDuration - targetDuration) > 0.1) {
+						throw new Error(
+							`Total shot durations (${totalDuration}s) must equal selected video duration (${targetDuration}s). Current difference: ${Math.abs(totalDuration - targetDuration).toFixed(1)}s`,
+						);
+					}
+
+					body = {
+						model: 'sora-2-pro-storyboard',
+						input: {
+							shots: formattedShots,
+							n_frames: nFrames,
+							aspect_ratio: aspectRatio,
+						},
+					};
+
+					// Only include image_urls if an image URL is provided
+					if (imageUrl && imageUrl.trim().length > 0) {
+						body.input.image_urls = [imageUrl];
+					}
 				}
-
-				// Validate total duration matches selected video duration
-				const targetDuration = parseInt(nFrames, 10);
-				// Allow small floating point tolerance (0.1s)
-				if (Math.abs(totalDuration - targetDuration) > 0.1) {
-					throw new Error(
-						`Total shot durations (${totalDuration}s) must equal selected video duration (${targetDuration}s). Current difference: ${Math.abs(totalDuration - targetDuration).toFixed(1)}s`,
-					);
-				}
-
-				const body: any = {
-					model: 'sora-2-pro-storyboard',
-					input: {
-						shots: formattedShots,
-						n_frames: nFrames,
-						image_urls: [imageUrl],
-						aspect_ratio: aspectRatio,
-					},
-				};
 
 				if (callBackUrl) {
 					body.callBackUrl = callBackUrl;

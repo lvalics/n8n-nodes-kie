@@ -1,6 +1,6 @@
 # n8n-nodes-kie
 
-This n8n community node enables seamless integration of **[Kie.ai](https://kie.ai)** in your [n8n](https://n8n.io) workflows. Access powerful AI models for image generation, video creation, image upscaling, and more.
+This n8n community node enables seamless integration of **[Kie.ai](https://kie.ai?ref=8bb1f85af9529decd05a9a7801792755)** in your [n8n](https://n8n.io) workflows. Access powerful AI models for image generation, video creation, image upscaling, and more.
 
 ## Features
 
@@ -30,7 +30,7 @@ npm install n8n-nodes-kie
 
 You'll need a Kie.ai API key to use these nodes:
 
-1. Sign up at [kie.ai](https://kie.ai)
+1. Sign up at [kie.ai](https://kie.ai?ref=8bb1f85af9529decd05a9a7801792755)
 2. Navigate to [API Key Management](https://kie.ai/api-key)
 3. Generate a new API key
 4. Add the API key to your n8n credentials
@@ -329,7 +329,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 - **Issues**: [GitHub Issues](https://github.com/lvalics/n8n-nodes-kie/issues)
 - **Documentation**: [Kie.ai Docs](https://docs.kie.ai)
-- **API Status**: [kie.ai](https://kie.ai)
+- **API Status**: [kie.ai](https://kie.ai?ref=8bb1f85af9529decd05a9a7801792755)
 
 ## License
 
@@ -344,5 +344,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Acknowledgments
 
 - [n8n](https://n8n.io) - Workflow automation platform
-- [Kie.ai](https://kie.ai) - AI model marketplace
+- [Kie.ai](https://kie.ai?ref=8bb1f85af9529decd05a9a7801792755) - AI model marketplace
 - n8n community for support and feedback
