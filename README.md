@@ -133,9 +133,11 @@ Google's Veo 3.1 professional video generation and enhancement.
 #### Kie Grok Imagine
 AI-powered video generation with style modes.
 - **Text-to-Video**: Generate videos from detailed text descriptions
-- **Image-to-Video**: Transform images into dynamic videos
+- **Image-to-Video**: Transform external images or previously generated Grok images into dynamic videos
+- **Duration Options**: 6 or 10 seconds
 - **Mode Options**: Normal (balanced), Fun (creative/playful), Spicy (intense motion)
 - **Aspect Ratios**: 2:3, 3:2, 1:1, 16:9, 9:16 (text-to-video)
+- **Image Sources**: External image URLs OR task_id + index from previously generated Grok images
 - **Rate Limits**: 30 concurrent tasks, 300 tasks/hour
 - **Video Validity**: Generated URLs valid for 24 hours
 - **Use Cases**: Dynamic content, social media videos, creative animations
