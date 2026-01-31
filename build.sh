@@ -69,116 +69,19 @@ if [ "$1" = "--build" ]; then
     exit 1
   fi
 
-  # Run npm publish with retry logic
-  publish_package() {
-    local OTP_CODE=$1
+  # Run npm publish
+  echo "Running npm publish..."
+  npm publish
 
-    echo "Running npm publish..."
-
-    # Build npm publish command with optional OTP
-    if [ -n "$OTP_CODE" ]; then
-      PUBLISH_OUTPUT=$(npm publish --otp="$OTP_CODE" 2>&1)
-    else
-      PUBLISH_OUTPUT=$(npm publish 2>&1)
-    fi
-    PUBLISH_EXIT_CODE=$?
-
-    # Display the output
-    echo "$PUBLISH_OUTPUT"
-
-    # Check if publish was successful
-    if [ $PUBLISH_EXIT_CODE -eq 0 ]; then
-      echo ""
-      echo "✅ Build and publish completed successfully!"
-      return 0
-    fi
-
-    # Check for OTP (Two-Factor Authentication) required
-    if echo "$PUBLISH_OUTPUT" | grep -qE "(EOTP|one-time password|OTP)"; then
-      echo ""
-      echo "🔐 TWO-FACTOR AUTHENTICATION REQUIRED"
-      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      echo ""
-      echo "Your npm account has 2FA enabled."
-      echo "Please enter the 6-digit code from your authenticator app:"
-      echo ""
-      read -p "OTP Code: " USER_OTP
-      echo ""
-
-      if [ -n "$USER_OTP" ]; then
-        echo "Retrying npm publish with OTP..."
-        publish_package "$USER_OTP"  # Retry with OTP
-        return $?
-      else
-        echo "❌ No OTP provided. Publish cancelled."
-        return 1
-      fi
-    fi
-
-    # Check for authentication errors
-    if echo "$PUBLISH_OUTPUT" | grep -qE "(E401|401 Unauthorized|Access token expired|ENEEDAUTH|authentication|login required)"; then
-      echo ""
-      echo "❌ AUTHENTICATION ERROR DETECTED"
-      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      echo ""
-      echo "Your npm access token has expired or is invalid."
-      echo ""
-      echo "📋 To fix this, please follow these steps:"
-      echo ""
-      echo "1. Login to npm:"
-      echo "   npm login"
-      echo ""
-      echo "   You'll be prompted for:"
-      echo "   - Username: Your npm username"
-      echo "   - Password: Your npm password"
-      echo "   - Email: Your npm email"
-      echo "   - OTP: One-time password (if 2FA is enabled)"
-      echo ""
-      echo "2. Verify your login:"
-      echo "   npm whoami"
-      echo ""
-      echo "3. Alternative - Use access token:"
-      echo "   npm config set //registry.npmjs.org/:_authToken YOUR_TOKEN"
-      echo ""
-      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      echo ""
-
-      # Offer to retry
-      read -p "Have you logged in? Would you like to retry publish? [Y/n]: " RETRY
-
-      # Default to yes if empty or starts with y/Y
-      RETRY=${RETRY:-yes}
-      if [[ "$RETRY" =~ ^[Yy] ]]; then
-        echo ""
-        echo "Retrying npm publish..."
-        publish_package  # Recursive retry
-      else
-        echo ""
-        echo "❌ Publish cancelled. Please login and run: npm publish"
-        return 1
-      fi
-    else
-      # Other publish errors
-      echo ""
-      echo "❌ PUBLISH FAILED"
-      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      echo ""
-      echo "Common issues:"
-      echo "• Package version already exists - increment version in package.json"
-      echo "• Package name taken - check if you own 'n8n-nodes-kie' on npm"
-      echo "• Network issues - check your internet connection"
-      echo ""
-      echo "Run 'npm publish' manually after fixing the issue."
-      echo ""
-      return 1
-    fi
-  }
-
-  # Call the publish function
-  publish_package
-  FINAL_EXIT_CODE=$?
-
-  exit $FINAL_EXIT_CODE
+  if [ $? -eq 0 ]; then
+    echo ""
+    echo "✅ Build and publish completed successfully!"
+    exit 0
+  else
+    echo ""
+    echo "❌ Publish failed. Check the error above."
+    exit 1
+  fi
 fi
 
 # Normal build process (without --build flag)

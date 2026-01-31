@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-kie",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "n8n nodes for Kie.ai - AI image generation, video creation, image upscaling with Seedream, Flux-2 Pro, Qwen, Google Nano Banana Pro, Topaz, Recraft, and Infinitalk models",
   "keywords": [
     "n8n-community-node-package",
